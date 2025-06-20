@@ -1,4 +1,7 @@
-const API_URL = '';
+// Cambia esto por tu URL real de Railway:
+const API_URL = location.hostname === 'localhost'
+  ? 'http://localhost:4000'
+  : 'https://paselista-lis.up.railway.app/'; // ← reemplaza por tu dominio real
 
 // Registrar usuario
 const addUserBtn = document.getElementById('addUser');
@@ -56,9 +59,10 @@ async function renderAttendanceList() {
   const today = new Date().toISOString().slice(0, 10);
   attendanceList.innerHTML = '';
   users.forEach(user => {
-    const userAttendance = attendance.filter(a => a.userId === user.id && a.date.startsWith(today))[0];
+    const userAttendance = attendance.find(a => a.userId === user.id && a.date.startsWith(today));
     const div = document.createElement('div');
     div.innerHTML = `<strong>${user.name}</strong> `;
+
     if (userAttendance) {
       let statusText = '';
       if (userAttendance.status === 'present') statusText = '<span class="status-present">🟢 Presente</span>';
@@ -69,7 +73,7 @@ async function renderAttendanceList() {
         div.innerHTML += statusText + ` <span style='color:#888;font-size:0.9em;'>(${dateTime})</span>`;
       } else {
         const [fecha, hora] = dateTime.split('T');
-        div.innerHTML += statusText + ` <span style='color:#888;font-size:0.9em;'>(${fecha} ${hora ? hora.slice(0,5) : ''})</span>`;
+        div.innerHTML += statusText + ` <span style='color:#888;font-size:0.9em;'>(${fecha} ${hora ? hora.slice(0, 5) : ''})</span>`;
       }
     } else {
       const btns = document.createElement('span');
@@ -95,6 +99,7 @@ async function renderAttendanceList() {
       });
       div.appendChild(btns);
     }
+
     attendanceList.appendChild(div);
   });
 }
@@ -108,4 +113,4 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('sw.js');
   });
-} 
+}
